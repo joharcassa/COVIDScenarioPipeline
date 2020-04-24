@@ -43,7 +43,6 @@ class SpatialSetup:
                 raise ValueError(f"mobility data must have dimensions of length of geodata ({self.nnodes}, {self.nnodes}). Actual: {self.mobility.shape}")
 
         elif ('.csv' in str(mobility_file)):
-            print('Mobility files as matrices are not recommended. Please switch soon to long form csv files.')
             mobility_data = pd.read_csv(mobility_file, converters={'ori': lambda x: str(x), 'dest': lambda x: str(x)})
             self.mobility = scipy.sparse.csr_matrix((self.nnodes, self.nnodes))
             for index, row in mobility_data.iterrows():
@@ -53,18 +52,6 @@ class SpatialSetup:
         else:
             raise ValueError(f"Mobility data must either be a .csv file in longform (recommended) or a .txt matrix file. Got {mobility_file}")
 
-        # if (self.mobility - self.mobility.T).nnz != 0:
-        #     raise ValueError(f"mobility data is not symmetric.")
-
-        # Make sure mobility values <= the population of src node
-        tmp = (self.mobility.T - self.popnodes).T
-        tmp[tmp < 0] = 0
-        if tmp.any():
-            rows, cols, values = scipy.sparse.find(tmp)
-            errmsg = ""
-            for r,c,v in zip(rows, cols, values):
-                errmsg += f"\n({r}, {c}) = {self.mobility[r,c]} > population of '{self.nodenames[r]}' = {self.popnodes[r]}"
-            raise ValueError(f"The following entries in the mobility data exceed the source node populations in geodata:{errmsg}")
 
 
 class Setup():
