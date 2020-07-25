@@ -65,6 +65,7 @@ all_geoids <- geodata[[config$spatial_setup$nodenames]]
 
 incident_cases <- cases_deaths %>%
   dplyr::filter(FIPS %in% all_geoids) %>%
+  dplyr::filter(Update >= config$start_date) %>%
   dplyr::select(Update, FIPS, incidI)
 
 incident_cases$Update <- as.Date(incident_cases$Update)
